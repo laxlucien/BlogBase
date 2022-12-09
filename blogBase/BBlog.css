@@ -1,0 +1,269 @@
+/*
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/Other/CascadeStyleSheet.css to edit this template
+*/
+/*
+    Created on : Oct 23, 2022, 10:02:14 PM
+    Author     : aweso
+*/
+
+*{
+   margin: 0;
+   padding:0;
+   font-family: 'poppins', sans-serif;
+   box-sizing: border-box;
+}
+
+a{
+    text-decoration: none;
+    color: #5a5a5a;
+}
+
+img{
+    cursor: pointer;
+}
+
+.flex-div{
+   display: flex;
+   align-items: center;
+}
+
+nav{
+    padding: 10px 2%;
+    justify-content: space-between;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    background: #fff;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.nav-left img{
+    height: 25px;
+    width: 25px;
+}
+
+.nav-right img{
+    height:25px;
+    width:25px;
+    margin-right: 25px;
+}
+
+.nav-right .user-icon{
+    width: 35px;
+    border-radius: 50%;
+    margin-right: 0;
+}
+
+.nav-left .menu-icon{
+    width:25px;
+    height:25px;
+    margin-right: 25px;
+}
+
+.nav-left .logo{
+    width: 35px;
+    height:25px;
+
+}
+
+.nav-mid .search-box{
+
+    border: 1px solid #ccc;
+    margin-right: 15px;
+    padding: 8px 12px;
+    border-radius: 25px;
+}
+
+.nav-mid .search-box input{
+
+    width: 600px;
+    border: 0;
+    outline: 0;
+    background: transparent;
+}
+
+.nav-mid .search-box img{
+    width: 15px;
+
+}
+/*-------------- side bar ----------*/
+
+.sidebar{
+    visibility: hidden;
+    background: #fff;
+    width: 15%;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    padding-left: 2%;
+    padding-top: 80px;
+}
+
+.shortcut-links a img{
+    width: 20px;
+    height: 20px;
+    margin-right: 20px;
+}
+
+.shortcut-links a{
+    padding: 4%;
+    display: flex;
+    align-items: center;
+    margin-bottom: fit-content;
+    flex-wrap: wrap;
+
+}
+
+.shortcut-links a:first-of-type{
+    color: #5a5a5a;
+}
+
+
+.sidebar hr{
+    width: 90%;
+    border: 0;
+    height: 1px;
+    background: #ccc;
+
+}
+
+.Authors h3{
+    font-size: 13px;
+    margin: 20px 0;
+    color: #5a5a5a;
+
+}
+
+.Authors a{
+    padding: 5%;
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px; /*prev- fit-cont*/
+    width: fit-content;
+    flex-wrap: wrap;
+
+}
+
+.Authors a img{
+    width: 30px;
+    border-radius: 50%;
+    /*height: 20px;*/
+    margin-right: 20px;
+}
+/* formating of text boxes on the create post page */
+input.title-box{
+  align-items: center;
+  color: black;
+
+}
+.makePost{
+    padding: 20px;
+    padding-left: 100px;
+    text-align: center;
+    align-items: center;
+}
+/*
+textarea {
+  width: 70%;
+  height: 500px;
+  padding: 12px 20px;
+  box-sizing: border-box;
+  border: 2px solid #ccc;
+  border-radius: 4px;
+  background-color: #f8f8f8;
+  resize: none;
+}
+
+
+
+button{
+    font-size: 18px;
+    width: 150px;
+    height:100px;
+}
+
+
+textarea{
+    padding-top: 200px
+}*/
+
+.small-sidebar{
+    visibility: visible;
+    width:20%;
+}
+
+.small-sidebar a p{
+    visibility: visible;
+    display: none;
+}
+
+.small-sidebar h3{
+    visibility: visible;
+    display: none;
+}
+.small-sidebar hr{
+    visibility: visible;
+    margin-bottom: 25px;
+    width: 70%;
+
+}
+.stuff{
+    color: black;
+
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.card {
+  color: black;
+  padding: 15px;
+  width: 90%;
+  box-shadow: 0 4px 8px 0 rgba(178, 178, 178,0.6);
+  transition: 0.3s;
+  border-radius: 5px; /* 5px rounded corners */
+  text-align: center;
+  align-items: center;
+
+}
+.container {
+  padding: 4px 18px;
+  text-align: center;
+  align-items: center;
+
+}
+/* Add rounded corners to the top left and the top right corner of the image */
+
+/*i added this and the stuff below*/
+input[type-file] {
+    width: 75%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    box-sizing: border-box;
+    align-items: center;
+    border-radius: 25px;
+}
+
+ad_images {
+    border-radius: 25px;
+    cursor: pointer;
+
+}
+
+/*----------------- View-post page ---------------*/
+.cont {
+    color: black;
+    padding: 15px;
+    padding:50px 30px ;
+    align-items: center;
+    text-align: center;
+}
+
+table, td{
+    text-align: center;
+    align-items: center;
+}
+
+.main-space{
+  border-spacing: 15px !important;
+}

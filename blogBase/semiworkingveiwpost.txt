@@ -1,0 +1,386 @@
+<?php
+ob_start();
+require('logic.php');
+
+$stmt = $con->query("SELECT postID, postTitle, postCont, postDate FROM blog_posts WHERE postID ='" . $_GET["id"] . "'");
+//$stmt->$query(array('postID' => $_GET['id']));
+$row = $stmt->fetch_assoc();
+$realPostID = $_GET["id"];
+
+//this is where we will add a view for the "hot" page where it is sorted by most viewed articles
+$incHot = $con->query("UPDATE blog_posts SET clickNumber=clickNumber + 1 WHERE postID='" . $_GET["id"] . "'");
+
+//if post does not exists redirect user.
+if ($row['postID'] == '') {
+    header('Location: ./'); //add page so that if a article is trying to be found that does not exit it willl rout to a paage saying this deos not exit, would like to got to the home page
+    exit;
+}
+
+?>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Blog - <?php echo $row['postTitle']; ?></title>
+    <link rel="stylesheet" href="BBlog.css">
+    <!--<link rel="stylesheet" href="style/main.css">-->
+    <style>
+    .card1 {
+      color: black;
+      width: fit-content;
+      padding: 15px;
+      box-shadow: 0 4px 8px 0 rgba(178, 178, 178,0.6);
+      transition: 0.3s;
+      border-radius: 5px; /* 5px rounded corners */
+    }
+    .container1 {
+      padding: 4px 18px;
+    }
+    .textBox {
+      height: 100px;
+      padding: 12px 20px;
+      box-sizing: border-box;
+      border: 2px solid #ccc;
+      border-radius: 5px;
+      background-color: #f8f8f8;
+      font-size: 16px;
+      resize: none;
+    }
+    .textBox1 {
+      height: 75px;
+      padding: 12px 20px;
+      box-sizing: border-box;
+      border: 2px solid #ccc;
+      border-radius: 5px;
+      background-color: #f8f8f8;
+      font-size: 16px;
+      resize: none;
+    }
+    </style>
+</head>
+
+<body>
+  <nav class="flex-div">
+      <div class="nav-left flex-div">
+          <img class="menu-icon" src="menu_icon.png">
+          <a href="index.php"><img src="logo1.png" class="logo" ></a>
+      </div>
+      <div class="nav-mid flex-div">
+          <div class="search-box flex-div">
+            <form action="search-proc.php" method="POST" id="searchForm">
+        <input type="text/submiit" name="search" placeholder="search"/> <img src="search.png">
+    </form>
+          </div>
+      </div><!-- comment -->
+      <div class="nav-right flex-div">
+          <a href="admin.php"><img src="admin_img.png"></a>
+          <a href="graphDes.php"><img src="gd.png"></a>
+          <a href="create.php"><img src="editor_img.png"></a>
+          <a href="ad_design.php"><img src="ad.png"></a>
+          <a href="user_profile.php"><img src="follow.png"></a>
+          <a href="login.php" >Login</a><!-- comment -->
+          <a href="register.php" style="padding: 10px 10px">Sign Up</a>
+          <a href="logout.php">Logout</a>
+      </div>
+  </nav>
+
+  <!--------------------- side bar --------------------->
+  <div class="sidebar">
+      <div class="shortcut-links">
+          <a href="index.php"><p><img src="home.png"> Home </a></p>
+          <a href="hot.php"><p><img src="hot.png"> Hot! </a></p>
+          <a href="viewSaved.php"><p><img src="saved.png"> Saved </a></p>
+          <a href="archived.php"><p><img src="history.png"> Archived </a></p>
+          <hr>
+      </div>
+      <div class="Authors">
+        <center>
+          <a href="social.php"><h3> Social </a></h3>
+        </center>
+          <?php
+          session_start();
+          if(isset($_SESSION["username"])){
+            $loggedInUser = $_SESSION["username"];
+            $getUserID = "SELECT userid FROM users WHERE username='$loggedInUser'";
+            $loggedOn = $con->query($getUserID);
+            if($loggedOn->num_rows > 0){
+              while($row = $loggedOn->fetch_assoc()){
+                $realUserID = $row["userid"];
+            $followList = "SELECT username FROM users, social_follow WHERE username!='$loggedInUser' and follower_id='$realUserID' and follow_id=1 and followed_user_id=userid";
+            $getFollowList = $con->query($followList);
+            if($getFollowList->num_rows > 0){
+              while($row1 = $getFollowList->fetch_assoc()){
+
+           ?>
+              <a href=""><p><img src="follow.png"><?php echo $row1["username"]; ?></a></p>
+            <?php
+          }
+          }
+          }
+          }
+        }else{
+          ?>
+          <center>
+            <p>Not following anyone</p><br>
+            <p>or</p><br>
+            <p>Need to login</p>
+          </center>
+          <?php
+        }
+           ?>
+      </div>
+  </div>
+<!-- the above is all for the sidebar and the other things that follow the sidebar -->
+<center>
+    <div id="wrapper">
+
+        <?php
+
+        echo '<div class="cont">';
+        //below will show the save icon on the page
+        if(isset($_SESSION["username"])){
+          $loggedInUser = $_SESSION["username"];
+          $getUserID = "SELECT userid FROM users WHERE username='$loggedInUser'";
+          $loggedOn = $con->query($getUserID);
+          if($loggedOn->num_rows > 0){
+            while($row2 = $loggedOn->fetch_assoc()){
+              $realUserID = $row2["userid"];
+
+          //this will update and maintain the posts from the various trader_cdlupsidegap2crows
+          $savedPart = "SELECT t1.postID as post1, t2.userID as user2
+                          FROM blog_posts as t1
+                          cross join users as t2";
+          $getSavedPart = $con->query($savedPart);
+          if($getSavedPart->num_rows > 0){
+            while($row7 = $getSavedPart->fetch_assoc()){
+              $PostID = $row7["post1"];
+              $UserID = $row7["user2"];
+
+              $sql7 = "INSERT INTO `save`
+                      SET postID = '$PostID',
+                          userID = '$UserID'
+                          ON DUPLICATE KEY UPDATE
+                              postID = VALUES(postID),
+                              userID = VALUES(userID)";
+              $resultToEnd = mysqli_query($con, $sql7);
+              //above loads all the entries into the db
+            }
+          }
+          $checkIfSaved = "SELECT is_saved, saveID FROM save WHERE userID='$realUserID' and postID='$realPostID'";
+          $getCheckIfSaved = $con->query($checkIfSaved);
+          $stmt1 = $con->query("SELECT postID, postTitle, postCont, postDate FROM blog_posts WHERE postID ='" . $_GET["id"] . "'");
+          //$stmt->$query(array('postID' => $_GET['id']));
+          $row10 = $stmt1->fetch_assoc();
+          if($getCheckIfSaved->num_rows > 0){
+            while($saveCheck = $getCheckIfSaved->fetch_assoc()){
+              if($saveCheck['is_saved']==0){
+                ?>
+                <p><h1><?php echo $row10['postTitle']; ?>
+                  <a href="savePost.php?saveID=<?php echo $saveCheck['saveID']; ?>"><img style="width: 20px; height: 20px;" src="saveIcon.png"></a></h1></p>
+                <?php
+                echo '<p>Posted on ' . $row10['postDate'] . '</p><br>';
+                echo '<p>' . $row10['postCont'] . '</p>';
+                echo '</div>';
+              }else{
+         ?>
+            <p><h1><?php echo $row10['postTitle']; ?><a href="unsavePost.php?saveID=<?php echo $saveCheck['saveID']; ?>"><img style="width: 20px; height: 20px;" src="checkmark.png"></a></h1></p>
+          <?php
+          echo '<p>Posted on ' . $row10['postDate'] . '</p><br>';
+          echo '<p>' . $row10['postCont'] . '</p>';
+          echo '</div>';
+      }
+    }
+  }
+}
+}
+
+      }else{
+        ?>
+        <p><h1><?php echo $row['postTitle']; ?></h1></p>
+        <?php
+
+        echo '<p>Posted on ' . $row['postDate'] . '</p><br>';
+        echo '<p>' . $row['postCont'] . '</p>';
+        echo '</div>';
+}
+        ?>
+    </div>
+    <!--this will be where the part for the comment section will be -->
+    <!-- this will be set up for the user based on username and then wil be stored in the comment table in the database -->
+    <br><br>
+    <p><h4>Leave a comment below:</h4></p>
+    <br>
+    <?php
+      $postComment = "SELECT comments.username, comments.content, comments.commentid FROM comments WHERE comments.postid='$realPostID'";
+      $getPostComment = $con->query($postComment);
+      if($getPostComment->num_rows > 0){
+        while($row4 = $getPostComment->fetch_assoc()){
+          ?>
+            <div class="card1">
+              <div class="container1">
+                <h4>@<?php echo $row4["username"]; ?>-</h4><br>
+              <h6><?php echo $row4["content"]; ?></h6>
+              <br>
+              <hr>
+              <br>
+              </div>
+            <br>
+          <?php
+          $realCommentId = $row4["commentid"];
+          //this is where the replys to comments will be located at for the comments that have been sent already.
+          $postReply = "SELECT replys.username, replys.replyCont, replys.replyid FROM replys WHERE replys.commentid='$realCommentId'";
+          $getPostReply = $con->query($postReply);
+          if($getPostReply->num_rows > 0){
+            while($row5 = $getPostReply->fetch_assoc()){
+          ?>
+          <div class="container1">
+            <h4>@<?php echo $row5["username"]; ?>-</h4><br>
+            <h6><?php echo $row5["replyCont"]; ?></h6>
+            <br>
+            <hr>
+            <br>
+          </div>
+          <?php
+          if(isset($_SESSION["username"])){
+            echo "<h5>Leave a reply to this comment:</h5>";
+            if(isset($_REQUEST['replyCont'])){
+              $loggedInUser = $_SESSION["username"];
+              //the above is for redirection purposes
+              $COMMENTID = $row4["commentid"];
+              //get the comment id for the comment that we are replying to
+              $replyCont = $_REQUEST['replyCont'];
+              $newreply = "INSERT INTO `replys` (username, commentid, replyCont)
+                            VALUES ('$loggedInUser', '$COMMENTID', '$replyCont')";
+              $resultReply = mysqli_query($con, $newreply);
+              if($resultReply){
+                header("Location: viewpost.php?id=$realPostID");
+              }else{
+                echo "<h4>There was an error submitting the query...</h4>";
+              }
+            }else{
+              ?>
+              <div class="card1">
+                <div class="container1">
+                  <form class=" align-items-center justify-content-center" action="" method="post">
+                    <div class="form-group">
+                      <label for="content">Reply:</label><br><br>
+                      <textarea id="replyCont" name="replyCont" rows="3" cols="50" class="textBox1" placeholder="Reply here:"></textarea><br><br>
+                    </div>
+                    <div class="form-group">
+                        <input type="submit" value="Post Reply" name="submit" class="form-control"/>
+                    </div>
+                  </form>
+                </div>
+              </div>
+              <?php
+            }
+          }else{
+            echo "<h5>You must login to reply to comments</h5>";
+            echo "<hr>";
+            echo "<br>";
+          }
+        }
+      echo "</div>";
+      }else{
+        if(isset($_SESSION["username"])){
+          echo "<h5>Leave a reply to this comment:</h5>";
+          if(isset($_REQUEST['replyCont'])){
+            $loggedInUser1 = $_SESSION["username"];            //the above is for redirection purposes
+            $COMMENTID1 = $row5["replyid"];
+            //get the comment id for the comment that we are replying to
+            $replyCont1 = $_REQUEST['replyCont1'];
+            $newreply1 = "INSERT INTO `replys` (username, commentid, replyCont)
+                          VALUES ('$loggedInUser1', '$COMMENTID1', '$replyCont1')";
+            $resultReply = mysqli_query($con, $newreply1);
+            if($resultReply){
+              header("Location: viewpost.php?id=$realPostID");
+            }else{
+              echo "<h4>There was an error submitting the query...</h4>";
+            }
+          }else{
+            ?>
+            <div class="card1">
+              <div class="container1">
+                <form class=" align-items-center justify-content-center" action="" method="post">
+                  <div class="form-group">
+                    <label for="content">Reply:</label><br><br>
+                    <textarea id="replyCont1" name="replyCont1" rows="3" cols="50" class="textBox1" placeholder="Reply here:"></textarea><br><br>
+                  </div>
+                  <div class="form-group">
+                      <input type="submit" value="Post Reply" name="submit" class="form-control"/>
+                  </div>
+                </form>
+              </div>
+            </div>
+            <?php
+          }
+        }else{
+          echo "<h5>You must login to reply to comments</h5>";
+        }
+      echo "</div>";
+      }
+        }
+      }else{
+        ?>
+        <br>
+        <div class="card1">
+          <div class="container1">
+            <h6>There have not been any comments on this post yet...</h6>
+          </div>
+        </div>
+        <br>
+        <?php
+      }
+    //below is there the person will be able to add their comments in eventurally
+        if(isset($_SESSION["username"])){
+          echo "<br>";
+          echo "<h4>Leave a comment of this post:</h4>";
+          $stmt1 = $con->query("SELECT postID, postTitle, postCont, postDate FROM blog_posts WHERE postID ='" . $_GET["id"] . "'");
+          //$stmt->$query(array('postID' => $_GET['id']));
+          $row10 = $stmt1->fetch_assoc();
+          if(isset($_REQUEST['content'])){
+            //this will get the info from the comment box
+            $loggedInUser = $_SESSION["username"];
+            $POSTID = $row10["postID"];
+            $content = $_REQUEST['content'];
+            $newComment = "INSERT INTO `comments` (username, postid, content)
+                          VALUES ('$loggedInUser', '$POSTID', '$content')";
+            $resultComment = mysqli_query($con, $newComment);
+            if($resultComment){
+              header("Location: viewpost.php?id=$realPostID");
+            }else{
+              echo "<h4>There was an error submitting the query...</h4>";
+            }
+          }else{
+            ?>
+            <div class="card1">
+              <div class="container1">
+                <form class=" align-items-center justify-content-center" action="" method="post">
+                  <div class="form-group">
+                    <label for="content">Comment:</label><br><br>
+                    <textarea id="content" name="content" rows="4" cols="50" class="textBox" placeholder="Comment here:"></textarea><br><br>
+                  </div>
+                  <div class="form-group">
+                      <input type="submit" value="Post Comment" name="submit" class="form-control"/>
+                  </div>
+                </form>
+              </div>
+            </div>
+            <?php
+          }
+        }else{
+          echo "<br>";
+          echo "<h4>You need to sign in to leave comments...</h4>";
+        }
+        ob_end_flush();
+     ?>
+
+
+</center>
+
+    <script src="script.js"></script>
+
+</body>
+
+</html>
