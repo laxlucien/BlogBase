@@ -1,6 +1,5 @@
 <?php
 include 'logic.php';
-include 'db.php';
 include('auth_saved.php');
 ?>
 <!DOCTYPE html>
@@ -58,7 +57,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
               <p><a href="social.php">Social</a></p>
             </center>
               <?php
-              
+
               if(isset($_SESSION["username"])){
                 $loggedInUser = $_SESSION["username"];
                 $getUserID = "SELECT userid FROM users WHERE username='$loggedInUser'";

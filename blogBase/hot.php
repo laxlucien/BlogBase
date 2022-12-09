@@ -1,6 +1,5 @@
 <?php
 include 'logic.php';
-include 'db.php';
 ?>
 <!DOCTYPE html>
 <!--

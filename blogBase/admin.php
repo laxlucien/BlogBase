@@ -1,5 +1,5 @@
 <?php
-require ('db.php');
+require ('logic.php');
 include ("auth_session.php");
 ?>
 <!DOCTYPE html>

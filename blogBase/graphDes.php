@@ -1,5 +1,5 @@
 <?php
-  include("db.php");
+  include("logic.php");
   include("auth_editor.php");
  ?>
 <!DOCTYPE html>

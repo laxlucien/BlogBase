@@ -1,6 +1,5 @@
 <?php
     include 'logic.php';
-    require 'db.php';
     include("auth_ad.php");
 ?>
 <!DOCTYPE html>
