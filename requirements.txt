@@ -1,21 +1,55 @@
-#This file is uded to instal the required packages to run the web server
+#!/bin/sh
 
-#for ubuntu
-  #Check if there i apache installed
-  #usage: dpkg -l | grep apache
-  
-  #check if php is installed
-  #usage: dpkg -l | grep php
-  
-  #install phpMyAdmin
-  #usage: apt-get install php phpmyadmin
-  
-#for CentOS and RHEL:
-  #check if apache is installed
-  #usage: rpm -qa | grep httpd
-  
-  #check if php is installed
-  #usage: rpm -qa | grep php
-  
-  #install phpMyAdmin
-  #usage: yum install phpmyadmin
+#######################################
+# Bash script to install an AMP stack and PHPMyAdmin plus tweaks. For Debian based systems.
+#
+# In case of any errors (e.g. MySQL) just re-run the script. Nothing will be re-installed except for the packages with errors.
+#
+# usage: sh requirements.txt
+#######################################
+
+#COLORS
+# Reset
+Color_Off='\033[0m'       # Text Reset
+
+# Regular Colors
+Red='\033[0;31m'          # Red
+Green='\033[0;32m'        # Green
+Yellow='\033[0;33m'       # Yellow
+Purple='\033[0;35m'       # Purple
+Cyan='\033[0;36m'         # Cyan
+
+# Update packages and Upgrade system
+echo -e "$Cyan \n Updating System.. $Color_Off"
+apt-get update -y && sudo apt-get upgrade -y
+
+## Install AMP
+echo -e "$Cyan \n Installing Apache2 $Color_Off"
+apt-get install apache2 apache2-doc apache2-mpm-prefork apache2-utils libexpat1 ssl-cert -y
+
+echo -e "$Cyan \n Installing PHP & Requirements $Color_Off"
+apt-get install libapache2-mod-php php php-common php-curl php-dev php-gd php-idn php-pear php-imagick php-mcrypt php-mysql php-ps php-pspell php-recode php-xsl -y
+
+echo -e "$Cyan \n Installing MySQL $Color_Off"
+apt-get install mysql-server mysql-client libmysqlclient15.dev -y
+
+echo -e "$Cyan \n Installing phpMyAdmin $Color_Off"
+apt-get install phpmyadmin -y
+
+echo -e "$Cyan \n Verifying installs$Color_Off"
+apt-get install apache2 libapache2-mod-php php mysql-server php-pear php-mysql mysql-client mysql-server php-mysql php-gd -y
+
+## TWEAKS and Settings
+# Permissions
+echo -e "$Cyan \n Permissions for /var/www $Color_Off"
+chown -R www-data:www-data /var/www
+echo -e "$Green \n Permissions have been set $Color_Off"
+
+# Enabling Mod Rewrite, required for WordPress permalinks and .htaccess files
+echo -e "$Cyan \n Enabling Modules $Color_Off"
+a2enmod rewrite
+phpenmod mcrypt
+
+# Restart Apache
+echo -e "$Cyan \n Restarting Apache $Color_Off"
+service apache2 restart
