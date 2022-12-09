@@ -39,3 +39,6 @@ comments as outlined above.
 5. An advertiser dashboard using which advertisers will be able to submit a picture as an ad of various 
 pre-determined sizes to be included in the newspaper of a generic or specific date. The price paid will 
 be based on the location and position of the newspaper. 
+
+The database configuration file for the database is called: config.inc.php
+The exported database file is called: blog_base.sql
