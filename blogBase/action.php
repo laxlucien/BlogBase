@@ -1,5 +1,5 @@
 <?php
-include_once('db.php');
+include_once('logic.php');
 if(isset($_REQUEST['replyCont'])){
   $loggedInUser = $_SESSION["username"];
   //the above is for redirection purposes

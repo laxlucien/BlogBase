@@ -1,5 +1,5 @@
 <?php
-include_once('db.php');
+include_once('logic.php');
 $realSaveID = $_GET["saveID"];
 $sql = "UPDATE save SET is_saved=1 WHERE saveID='" . $_GET["saveID"] . "'";
 if (mysqli_query($con, $sql)) {

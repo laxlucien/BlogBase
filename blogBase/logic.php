@@ -2,14 +2,14 @@
 <head>
     <link rel="stylesheet" href="BBlog.css">
 </head>
-<body> 
+<body>
     <?php
     $hostName = "localhost";
     $userName = "root";
     $password = "";
     $databaseName = "blog_base";
-    
-    $con = mysqli_connect($hostName,$userName , $password, $databaseName);
+
+    $con = mysqli_connect($hostName, $userName , $password, $databaseName);
 
     if (!$con) {
         echo"<h3 class='container bg-dark text-center p-3 text-warning rounded-lg mt-5'>not able to establish database connection</h3>";

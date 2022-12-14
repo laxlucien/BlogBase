@@ -1,6 +1,6 @@
 <?php
 // Include the database configuration file
-include 'db.php';
+include 'logic.php';
 $statusMsg = '';
 
 // File upload path
@@ -23,7 +23,7 @@ if(isset($_POST["submit"]) && !empty($_FILES["file"]["name"])){
             }else{
                 $statusMsg = "File upload failed, please try again.";
                 header("Location: ad_design.php");
-            } 
+            }
         }else{
             $statusMsg = "Sorry, there was an error uploading your file.";
                 header("Location: ad_design.php");

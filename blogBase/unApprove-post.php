@@ -1,5 +1,5 @@
 <?php
-include_once('db.php');
+include_once('logic.php');
 $sql = "UPDATE blog_posts SET is_approved=0 WHERE postID='" . $_GET["postID"] . "'";
 if (mysqli_query($con, $sql)) {
     echo "Record updated successfully";

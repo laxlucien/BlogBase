@@ -2,17 +2,6 @@
 // Update the details below with your MySQL details
 require('logic.php');
 
-$DATABASE_HOST = 'localhost';
-$DATABASE_USER = 'root';
-$DATABASE_PASS = '';
-$DATABASE_NAME = 'blog_base';
-try {
-    $pdo = new PDO('mysql:host=' . $DATABASE_HOST . ';dbname=' . $DATABASE_NAME . ';charset=utf8', $DATABASE_USER, $DATABASE_PASS);
-} catch (PDOException $exception) {
-    // If there is an error with the connection, stop the script and display the error
-    exit('Failed to connect to database!');
-}
-
 session_start();
 if(isset($_SESSION["username"])){
   $loggedInUser = $_SESSION["username"];
@@ -39,25 +28,21 @@ return $string ? implode(', ', $string) . ' ago' : 'just now';
 // This function will populate the comments and comments replies using a loop
 function show_comments($comments, $parent_id = -1) {
 $html = '';
-if ($parent_id != -1) {
-    // If the comments are replies sort them by the "submit_date" column
-    array_multisort(array_column($comments, 'submit_date'), SORT_ASC, $comments);
-}
 // Iterate the comments using the foreach loop
-foreach ($comments as $comment) {
-    if ($comment['parent_id'] == $parent_id) {
+foreach($comments as $help){
+    if ($help['parent_id'] == $parent_id) {
         // Add the comment to the $html variable
         $html .= '
         <div class="comment">
             <div>
-                <h3 class="name">' . htmlspecialchars($comment['name'], ENT_QUOTES) . '</h3>
-                <span class="date">' . time_elapsed_string($comment['submit_date']) . '</span>
+                <h3 class="name">' . htmlspecialchars($help['name'], ENT_QUOTES) . '</h3>
+                <span class="date">' . time_elapsed_string($help['submit_date']) . '</span>
             </div>
-            <p class="content">' . nl2br(htmlspecialchars($comment['content'], ENT_QUOTES)) . '</p>
-            <a class="reply_comment_btn" href="#" data-comment-id="' . $comment['id'] . '">Reply</a>
-            ' . show_write_comment_form($comment['id']) . '
+            <p class="content">' . nl2br(htmlspecialchars($help['content'], ENT_QUOTES)) . '</p>
+            <a class="reply_comment_btn" href="#" data-comment-id="' . $help['id'] . '">Reply</a>
+            ' . show_write_comment_form($help['id']) . '
             <div class="replies">
-            ' . show_comments($comments, $comment['id']) . '
+            ' . show_comments($comments, $help['id']) . '
             </div>
         </div>
         ';
@@ -78,7 +63,7 @@ $html = '
 <div class="write_comment" data-comment-id="' . $parent_id . '">
     <form>
         <input name="parent_id" type="hidden" value="' . $parent_id . '">
-        <input name="name" type="text" value="' . $current . '">
+        <input name="name" type="hidden" value="' . $current . '">
         <textarea name="content" placeholder="Write your comment here..." required></textarea>
         <button type="submit">Submit Comment</button>
     </form>
@@ -87,25 +72,26 @@ $html = '
 return $html;
 }
 }
-
+$realPageID = 0;
 // Page ID needs to exist, this is used to determine which comments are for which page
 if (isset($_GET['page_id'])) {
+  $realPageID = $_GET['page_id'];
 // Check if the submitted form variables exist
 if (isset($_POST['name'], $_POST['content'])) {
     // POST variables exist, insert a new comment into the MySQL comments table (user submitted form)
-    $stmt = $pdo->prepare('INSERT INTO comments (page_id, parent_id, name, content, submit_date) VALUES (?,?,?,?,NOW())');
+    $stmt = $con->prepare('INSERT INTO comments (page_id, parent_id, name, content, submit_date) VALUES (?,?,?,?,NOW())');
     $stmt->execute([ $_GET['page_id'], $_POST['parent_id'], $loggedInUser, $_POST['content'] ]);
     exit('Your comment has been submitted!');
 }
 }
 // Get all comments by the Page ID ordered by the submit date
-$stmt = $pdo->prepare('SELECT * FROM comments WHERE page_id = ? ORDER BY submit_date DESC');
-$stmt->execute([ $_GET['page_id'] ]);
-$comments = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$stmt = $con->query("SELECT * FROM comments WHERE page_id = '$realPageID' ORDER BY submit_date DESC");
+$comments = $stmt;
+$comments1 = $stmt->fetch_all(MYSQLI_ASSOC);
+
 // Get the total number of comments
-$stmt = $pdo->prepare('SELECT COUNT(*) AS total_comments FROM comments WHERE page_id = ?');
-$stmt->execute([ $_GET['page_id'] ]);
-$comments_info = $stmt->fetch(PDO::FETCH_ASSOC);
+$stmt = $con->query("SELECT COUNT(*) AS total_comments FROM comments WHERE page_id = $realPageID");
+$comments_info = $stmt->fetch_assoc();
 } else {
 exit('You need to sign in to view comments...');
 }
@@ -119,4 +105,4 @@ exit('You need to sign in to view comments...');
 
 <?=show_write_comment_form()?>
 
-<?=show_comments($comments)?>
+<?=show_comments($comments1)?>

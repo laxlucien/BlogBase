@@ -1,5 +1,5 @@
 <?php
-include_once('db.php');
+include_once('logic.php');
 $sql = "UPDATE social_follow SET follow_id=1 WHERE unique_number='" . $_GET["unique_number"] . "'";
 if (mysqli_query($con, $sql)) {
     echo "Record updated successfully";

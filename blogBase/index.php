@@ -29,7 +29,23 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
               <input type="text/submiit" name="search" placeholder="search"/> <img src="search.png">
           </form>
                 </div>
-            </div><!-- comment -->
+              </div>
+                <?php
+                session_start();
+                if(isset($_SESSION["username"])){
+                  $loggedInUser = $_SESSION["username"];
+                  ?>
+                  <div class="nav-right flex-div">
+                      <a href="admin.php"><img src="admin_img.png"></a>
+                      <a href="graphDes.php"><img src="gd.png"></a>
+                      <a href="create.php"><img src="editor_img.png"></a>
+                      <a href="ad_design.php"><img src="ad.png"></a>
+                      <a href="user_profile.php" style="padding: 10px"><img src="follow.png"></a>
+                      <u><?php echo $_SESSION['username'] ?></u>
+                      <a href="logout.php" style="padding: 10px">Logout</a>
+                  <?php
+                }else{
+                  ?>
             <div class="nav-right flex-div">
                 <a href="admin.php"><img src="admin_img.png"></a>
                 <a href="graphDes.php"><img src="gd.png"></a>
@@ -37,9 +53,11 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                 <a href="ad_design.php"><img src="ad.png"></a>
                 <a href="user_profile.php"><img src="follow.png"></a>
                 <a href="login.php" >Login</a><!-- comment -->
-                <a href="register.php" style="padding: 10px 10px">Sign Up</a>
-                <a href="logout.php">Logout</a>
+                <a href="register.php" style="padding: 10px">Sign Up</a>
             </div>
+            <?php
+          }
+          ?>
         </nav>
 
         <!--------------------- side bar --------------------->
@@ -56,7 +74,6 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                 <p><a href="social.php">Social</a></p>
               </center>
                 <?php
-                session_start();
                 if(isset($_SESSION["username"])){
                   $loggedInUser = $_SESSION["username"];
                   $getUserID = "SELECT userid FROM users WHERE username='$loggedInUser'";
