@@ -72,15 +72,18 @@ $html = '
 return $html;
 }
 }
-$realPageID = 0;
+$realPageID = -1;
 // Page ID needs to exist, this is used to determine which comments are for which page
 if (isset($_GET['page_id'])) {
   $realPageID = $_GET['page_id'];
 // Check if the submitted form variables exist
 if (isset($_POST['name'], $_POST['content'])) {
+  $realPostName = $_POST['parent_id'];
+  $realContent = $_POST['content'];
     // POST variables exist, insert a new comment into the MySQL comments table (user submitted form)
-    $stmt = $con->prepare('INSERT INTO comments (page_id, parent_id, name, content, submit_date) VALUES (?,?,?,?,NOW())');
-    $stmt->execute([ $_GET['page_id'], $_POST['parent_id'], $loggedInUser, $_POST['content'] ]);
+    $stmt    = "INSERT into `comments` (page_id, parent_id, name, content)
+                 VALUES ('$realPageID', '$realPostName', '$loggedInUser', '$realContent')";
+    $result   = mysqli_query($con, $stmt);
     exit('Your comment has been submitted!');
 }
 }
